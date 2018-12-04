@@ -54,14 +54,14 @@ function TableList(props) {
           <CardBody>
             <Table
               tableHeaderColor="primary"
-              tableHead={["Nome", "E-mail", "Ações", "Status"]}
+              tableHead={["Name", "Country", "City", "Salary"]}
               tableData={[
-                ["Kendrick Lammar", "ken_lam@gmail.com", "", "Ausente"],
-                ["Minerva Hooper", "Curaçao@hotmail.com", "", "Disponivel"],
-                ["Sage Rodriguez", "Nether@bol.com", "", "Indisponivel"],
-                ["Philip Chaney", "KoreSou@yahoo.com", "", "Ausente"],
-                ["Doris Greene", "Malawi@ig.com", "", "disponivel"],
-                ["Mason Porter", "Chill@gmail.com", "", "Disponivel"]
+                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
+                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
+                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
+                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
+                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
+                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
               ]}
             />
           </CardBody>
