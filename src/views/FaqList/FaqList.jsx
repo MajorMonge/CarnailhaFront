@@ -39,26 +39,25 @@ const styles = {
   }
 };
 
-function UserList(props) {
+function FaqList(props) {
   const { classes } = props;
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
           <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Usuários</h4>
+            <h4 className={classes.cardTitleWhite}>FAQ</h4>
           </CardHeader>
           <CardBody>
             <Table
               tableHeaderColor="primary"
-              tableHead={["Nome", "E-mail", "Ações", "Status"]}
+              tableHead={["Perguntas", "Respostas"]}
               tableData={[
-                ["Kendrick Lammar", "ken_lam@gmail.com", "", "Ausente"],
-                ["Minerva Hooper", "Curaçao@hotmail.com", "", "Disponivel"],
-                ["Sage Rodriguez", "Nether@bol.com", "", "Indisponivel"],
-                ["Philip Chaney", "KoreSou@yahoo.com", "", "Ausente"],
-                ["Doris Greene", "Malawi@ig.com", "", "disponivel"],
-                ["Mason Porter", "Chill@gmail.com", "", "Disponivel"]
+                ["Quais os dias e horários do evento?", "O Carnailha ocorre entre os dias 01 e 05 de março de 2019, das 18h00 às 04h00 do dia seguinte."],
+                ["Qual o local do evento?", "Ilha Solteira, na Praia Catarina."],
+                ["O evento é open bar?", "Sim, bora encher a cara galerê."],
+                ["A entrada de menores de idade é proibida?", "Sim, por ser openbar."],
+                ["Hoje sou menor de idade, mas terei mais de 18 anos no carnaval, posso comprar meu pacote no meu nome?", "Você pode comprar sim bb, mas para retirar o pacote só acima de dz8."]
               ]}
             />
           </CardBody>
@@ -68,4 +67,4 @@ function UserList(props) {
   );
 }
 
-export default withStyles(styles)(UserList);
+export default withStyles(styles)(FaqList);

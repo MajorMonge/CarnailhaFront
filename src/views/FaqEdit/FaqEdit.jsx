@@ -1,7 +1,6 @@
 import React from "react";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-
 // core components
 import GridItem from "components/Grid/GridItem.jsx";
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -9,10 +8,9 @@ import CustomInput from "components/CustomInput/CustomInput.jsx";
 import Button from "components/CustomButtons/Button.jsx";
 import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
+
 import CardBody from "components/Card/CardBody.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
-
-
 
 const styles = {
   cardCategoryWhite: {
@@ -33,7 +31,7 @@ const styles = {
   }
 };
 
-function UserEdit(props) {
+function FaqEdit(props) {
   const { classes } = props;
   return (
     <div>
@@ -41,14 +39,14 @@ function UserEdit(props) {
         <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Editar Usuário</h4>
+              <h4 className={classes.cardTitleWhite}>Editar FAQ</h4>
             </CardHeader>
             <CardBody>
               <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
+                <GridItem xs={12} sm={12} md={12}>
                   <CustomInput
-                    labelText="Nome"
-                    id="nome"
+                    labelText="Pergunta"
+                    id="pergunta"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -57,30 +55,12 @@ function UserEdit(props) {
                     }}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText="Email"
-                    id="email-address"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                  />
-                </GridItem>
               </GridContainer>
               <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
+                <GridItem xs={12} sm={12} md={12}>
                   <CustomInput
-                    labelText="Ações"
-                    id="actions"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText="Status"
-                    id="status"
+                    labelText="Resposta"
+                    id="resposta"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -89,7 +69,7 @@ function UserEdit(props) {
               </GridContainer>
             </CardBody>
             <CardFooter style={{ justifyContent: "flex-end" }}>
-              <Button color="primary">Atualizar Usuário</Button>
+              <Button color="primary">Atualizar FAQ</Button>
             </CardFooter>
           </Card>
         </GridItem>
@@ -98,4 +78,4 @@ function UserEdit(props) {
   );
 }
 
-export default withStyles(styles)(UserEdit);
+export default withStyles(styles)(FaqEdit);

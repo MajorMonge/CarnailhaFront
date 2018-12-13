@@ -6,11 +6,11 @@ import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import BubbleChart from "@material-ui/icons/BubbleChart";
 import LocationOn from "@material-ui/icons/LocationOn";
 import Notifications from "@material-ui/icons/Notifications";
-import Unarchive from "@material-ui/icons/Unarchive";
+//import Unarchive from "@material-ui/icons/Unarchive";
 // core components/views
 import DashboardPage from "views/Dashboard/Dashboard.jsx";
-import UserProfile from "views/UserProfile/UserProfile.jsx";
-import TableList from "views/TableList/TableList.jsx";
+// import UserProfile from "views/UserProfile/UserProfile.jsx";
+// import TableList from "views/TableList/TableList.jsx";
 import Typography from "views/Typography/Typography.jsx";
 import Icons from "views/Icons/Icons.jsx";
 import Maps from "views/Maps/Maps.jsx";
@@ -18,6 +18,8 @@ import NotificationsPage from "views/Notifications/Notifications.jsx";
 // import UpgradeToPro from "views/UpgradeToPro/UpgradeToPro.jsx";
 import UserEdit from "views/UserEdit/UserEdit.jsx";
 import UserList from "views/UserList/UserList.jsx";
+import FaqList from "views/FaqList/FaqList.jsx";
+import FaqEdit from "views/FaqEdit/FaqEdit.jsx";
 
 const dashboardRoutes = [
   {
@@ -28,19 +30,47 @@ const dashboardRoutes = [
     component: DashboardPage
   },
   {
-    path: "/user",
-    sidebarName: "User Profile",
-    navbarName: "Profile",
+    path: "/useredit",
+    sidebarName: "Editar Usuário",
+    navbarName: "Editar Usuário",
     icon: Person,
-    component: UserProfile
+    component: UserEdit
   },
   {
-    path: "/table",
-    sidebarName: "Table List",
-    navbarName: "Table List",
+    path: "/userlist",
+    sidebarName: "Lista de Usuários",
+    navbarName: "Lista de Usuários",
     icon: "content_paste",
-    component: TableList
+    component: UserList
   },
+  {
+    path: "/faqedit",
+    sidebarName: "Editar FAQ",
+    navbarName: "Editar FAQ",
+    icon: "question_answer",
+    component: FaqEdit
+  },
+  {
+    path: "/faqlist",
+    sidebarName: "Lista de FAQ's",
+    navbarName: "Lista de FAQ's",
+    icon: "content_paste",
+    component: FaqList
+  },
+  // {
+  //   path: "/user",
+  //   sidebarName: "User Profile",
+  //   navbarName: "Profile",
+  //   icon: Person,
+  //   component: UserProfile
+  // },
+  // {
+  //   path: "/table",
+  //   sidebarName: "Table List",
+  //   navbarName: "Table List",
+  //   icon: "content_paste",
+  //   component: TableList
+  // },
   {
     path: "/typography",
     sidebarName: "Typography",
@@ -76,20 +106,6 @@ const dashboardRoutes = [
   //   icon: Unarchive,
   //   component: UpgradeToPro
   // },
-  {
-    path: "/useredit",
-    sidebarName: "Editar Usuário",
-    navbarName: "Editar Usuário",
-    icon: Person,
-    component: UserEdit
-  },
-  {
-    path: "/userlist",
-    sidebarName: "User List",
-    navbarName: "User List",
-    icon: "content_paste",
-    component: UserList
-  },
   { redirect: true, path: "/", to: "/dashboard", navbarName: "Redirect" }
 ];
 
