@@ -1,6 +1,8 @@
 // @material-ui/icons
-import Dashboard from "@material-ui/icons/Dashboard";
+import Home from "@material-ui/icons/Home";
 import Person from "@material-ui/icons/Person";
+import Bus from "@material-ui/icons/DirectionsBus";
+
 // import ContentPaste from "@material-ui/icons/ContentPaste";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import BubbleChart from "@material-ui/icons/BubbleChart";
@@ -11,6 +13,7 @@ import Notifications from "@material-ui/icons/Notifications";
 import DashboardPage from "views/Dashboard/Dashboard.jsx";
 // import UserProfile from "views/UserProfile/UserProfile.jsx";
 // import TableList from "views/TableList/TableList.jsx";
+import Caravans from "views/Caravans/Caravans.jsx";
 import Typography from "views/Typography/Typography.jsx";
 import Icons from "views/Icons/Icons.jsx";
 import Maps from "views/Maps/Maps.jsx";
@@ -24,9 +27,9 @@ import FaqEdit from "views/FaqEdit/FaqEdit.jsx";
 const dashboardRoutes = [
   {
     path: "/dashboard",
-    sidebarName: "Dashboard",
+    sidebarName: "Início",
     navbarName: "Material Dashboard",
-    icon: Dashboard,
+    icon: Home,
     component: DashboardPage
   },
   {
@@ -37,6 +40,12 @@ const dashboardRoutes = [
     component: UserEdit
   },
   {
+    path: "/caravans",
+    sidebarName: "Caravanas",
+    icon: Bus,
+    navbarName: "Caravanas",
+    component: Caravans
+  },
     path: "/userlist",
     sidebarName: "Lista de Usuários",
     navbarName: "Lista de Usuários",
@@ -99,13 +108,6 @@ const dashboardRoutes = [
     icon: Notifications,
     component: NotificationsPage
   },
-  // {
-  //   path: "/upgrade-to-pro",
-  //   sidebarName: "Upgrade To PRO",
-  //   navbarName: "Upgrade To PRO",
-  //   icon: Unarchive,
-  //   component: UpgradeToPro
-  // },
   { redirect: true, path: "/", to: "/dashboard", navbarName: "Redirect" }
 ];
 
