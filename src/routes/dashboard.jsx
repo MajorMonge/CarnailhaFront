@@ -19,10 +19,8 @@ import Icons from "views/Icons/Icons.jsx";
 import Maps from "views/Maps/Maps.jsx";
 import NotificationsPage from "views/Notifications/Notifications.jsx";
 // import UpgradeToPro from "views/UpgradeToPro/UpgradeToPro.jsx";
-import UserEdit from "views/UserEdit/UserEdit.jsx";
-import UserList from "views/UserList/UserList.jsx";
-import FaqList from "views/FaqList/FaqList.jsx";
-import FaqEdit from "views/FaqEdit/FaqEdit.jsx";
+import User from "views/User/User.jsx";
+import Faq from "views/Faq/Faq.jsx";
 
 const dashboardRoutes = [
   {
@@ -33,11 +31,11 @@ const dashboardRoutes = [
     component: DashboardPage
   },
   {
-    path: "/useredit",
-    sidebarName: "Editar Usuário",
-    navbarName: "Editar Usuário",
+    path: "/user",
+    sidebarName: "Usuários",
+    navbarName: "Usuários",
     icon: Person,
-    component: UserEdit
+    component: User
   },
   {
     path: "/caravans",
@@ -46,25 +44,12 @@ const dashboardRoutes = [
     navbarName: "Caravanas",
     component: Caravans
   },
-    path: "/userlist",
-    sidebarName: "Lista de Usuários",
-    navbarName: "Lista de Usuários",
-    icon: "content_paste",
-    component: UserList
-  },
   {
-    path: "/faqedit",
-    sidebarName: "Editar FAQ",
-    navbarName: "Editar FAQ",
+    path: "/faq",
+    sidebarName: "FAQ",
+    navbarName: "FAQ",
     icon: "question_answer",
-    component: FaqEdit
-  },
-  {
-    path: "/faqlist",
-    sidebarName: "Lista de FAQ's",
-    navbarName: "Lista de FAQ's",
-    icon: "content_paste",
-    component: FaqList
+    component: Faq
   },
   // {
   //   path: "/user",
@@ -72,13 +57,6 @@ const dashboardRoutes = [
   //   navbarName: "Profile",
   //   icon: Person,
   //   component: UserProfile
-  // },
-  // {
-  //   path: "/table",
-  //   sidebarName: "Table List",
-  //   navbarName: "Table List",
-  //   icon: "content_paste",
-  //   component: TableList
   // },
   {
     path: "/typography",

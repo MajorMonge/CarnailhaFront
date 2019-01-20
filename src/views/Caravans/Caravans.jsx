@@ -174,7 +174,7 @@ class Caravans extends React.Component {
     this.setState(x);
     this.setState({ notification, color });
     this.alertTimeout = setTimeout(
-      function() {
+      function () {
         x[place] = false;
         this.setState(x);
       }.bind(this),
@@ -558,12 +558,12 @@ class Caravans extends React.Component {
                   <Button onClick={this.handleReset}>Reset</Button>
                 </div>
               ) : (
-                <div>
-                  <Typography className={classes.instructions}>
-                    {this.getStepContent(activeStep)}
-                  </Typography>
-                </div>
-              )}
+                  <div>
+                    <Typography className={classes.instructions}>
+                      {this.getStepContent(activeStep)}
+                    </Typography>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -571,36 +571,38 @@ class Caravans extends React.Component {
     } else {
       return (
         <div>
-          <GridItem xs={12} sm={12} md={12}>
-            <Card>
-              <CardHeader color="primary">
-                <h4 className={classes.cardTitleWhite}>
-                  Caravanas Cadastradas
+          <GridContainer>
+            <GridItem xs={12} sm={12} md={12}>
+              <Card>
+                <CardHeader color="primary">
+                  <h4 className={classes.cardTitleWhite}>
+                    Caravanas Cadastradas
                 </h4>
-                <p>
-                  Área de gerenciamento das caravanas do site. Você pode inserir
-                  uma nova caravana e editar as caravanas já existentes.
+                  <p>
+                    Área de gerenciamento das caravanas do site. Você pode inserir
+                    uma nova caravana e editar as caravanas já existentes.
                 </p>
-                <Button
-                  onClick={this.handleModalOpen}
-                  style={{ alignItems: "center", justifyContent: "center" }}
-                  round
-                  color="success"
-                  className={classes.fabButton}
-                >
-                  <AddIcon /> Nova Caravana
+                  <Button
+                    onClick={this.handleModalOpen}
+                    style={{ alignItems: "center", justifyContent: "center" }}
+                    round
+                    color="success"
+                    className={classes.fabButton}
+                  >
+                    <AddIcon /> Nova Caravana
                 </Button>
-              </CardHeader>
-              <CardBody>
-                {/* <Table
+                </CardHeader>
+                <CardBody>
+                  {/* <Table
                   tableHeaderColor="primary"
                   tableHead={["Estado", "Quantidade", "Ação"]}
                   tableData={this.state.table}
                 /> */}
-                {this.renderList()}
-              </CardBody>
-            </Card>
-          </GridItem>
+                  {this.renderList()}
+                </CardBody>
+              </Card>
+            </GridItem>
+          </GridContainer>
         </div>
       );
     }
