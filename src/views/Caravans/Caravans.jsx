@@ -77,14 +77,21 @@ class Caravans extends React.Component {
       caravans: [],
       listStates: [],
 
-      table: [],
       states: constants.estados,
-      state: "SP",
-      city: null,
-      promoters: [{ name: "", img: "", wpp: "", email: "", face_link: "" }],
-      activeStep: 0,
-      countPromoters: 1,
-      modalOpen: false,
+      state: "",
+      city: "",
+      promoters: [
+        {
+          name: "",
+          img: "",
+          wpp: "",
+          email: "@email.com",
+          face_link: "fb.me"
+        }
+      ],
+
+      action: 0, //0- listagem, 1- insert estado, 2- insert cidade, 3- insert promoter
+      indexState: null,
 
       notification: "",
       color: "info",
@@ -96,32 +103,6 @@ class Caravans extends React.Component {
   componentDidMount() {
     this._load();
   }
-
-  handleNext = () => {
-    this.setState(state => ({
-      activeStep: state.activeStep + 1
-    }));
-  };
-
-  handleBack = () => {
-    this.setState(state => ({
-      activeStep: state.activeStep - 1
-    }));
-  };
-
-  handleReset = () => {
-    this.setState({
-      activeStep: 0
-    });
-  };
-
-  handleModalOpen = () => {
-    this.setState({ modalOpen: true });
-  };
-
-  handleModalClose = () => {
-    this.setState({ modalOpen: false });
-  };
 
   handleAddPromoter = () => {
     let promoters = this.state.promoters;
@@ -165,10 +146,27 @@ class Caravans extends React.Component {
   };
 
   handleListSelect = (statePosition, cityPosition) => {
-    const city = this.state.listStates[statePosition].cities[cityPosition];
+    const state = this.state.listStates[statePosition];
+
+    const { city, promoters } = this.state.listStates[statePosition].cities[
+      cityPosition
+    ];
+
+    this.setState({ city, promoters, action: 2 });
+  };
+
+  handleClearFields = () => {
+    const state = "",
+      city = "",
+      action = 0,
+      indexState = null,
+      promoters = [{ name: "", img: "", wpp: "", email: "", face_link: "" }];
+
+    this.setState({ state, city, promoters, indexState, action });
   };
 
   showNotification(place, notification, color) {
+    console.log("MOSTRANDO NOTIFICAÇÂO");
     var x = [];
     x[place] = true;
     this.setState(x);
@@ -197,31 +195,79 @@ class Caravans extends React.Component {
 
     const response = await Service.post(data);
 
-    if (response.code != 200) {
-      let error = "";
+    let msg = "",
+      type = "";
+    if (response.code != 201) {
       for (let x in response.errors) {
-        error += response.errors[x].msg + ", ";
+        msg += response.errors[x].msg + ", ";
       }
-
-      this.showNotification("tc", error, "danger");
+      type = "danger";
     } else {
-      this.showNotification("tc", "Cadastrado com sucesso!", "success");
+      msg = "Cadastrado com sucesso!";
+      type = "success";
+      state.push(response.caravan);
+      this.setState({ state });
     }
+    this.setState({ action: 0 });
+    this.showNotification("tc", msg, type);
+  };
+
+  _update = async () => {
+    const { indexState, city, listStates, promoters } = this.state;
+    const state = listStates[indexState];
+    const newCity = { city, promoters };
+    state.cities.push(newCity);
+
+    const data = {
+      _id: state._id,
+      name: state.name,
+      state: state.name,
+      cities: state.cities
+    };
+
+    console.log(data);
+
+    const response = await Service.update(data);
+
+    let msg = "",
+      type = "";
+    if (response.code != 201) {
+      for (let x in response.errors) {
+        msg += response.errors[x].msg + ", ";
+      }
+      type = "danger";
+    } else {
+      msg = "Alterado com sucesso!";
+      type = "success";
+
+      listStates.push(state);
+
+      this.setState({ listStates });
+    }
+
+    this.setState({ action: 0 });
+    this.showNotification("tc", msg, type);
   };
 
   _load = async () => {
     // eslint-disable-next-line no-console
     const response = await Service.get();
 
+    let listStates = [];
     if (response.data.code === 200) {
-      let listStates = [];
       response.data.caravans.forEach(caravan => {
         if (caravan.cities.length == 0) {
           caravan.cities = caravan.citys;
         }
-        let state = { name: caravan.state, cities: caravan.cities };
+        let state = {
+          _id: caravan._id,
+          name: caravan.state,
+          cities: caravan.cities
+        };
         listStates.push(state);
       });
+
+      console.log(listStates);
 
       this.setState({ caravans: response.data.caravans, listStates });
     } else {
@@ -229,49 +275,53 @@ class Caravans extends React.Component {
     }
   };
 
-  getSteps() {
-    return ["Cidade da caravana", "Promoters", "Confirmar"];
-  }
-
-  getStepContent(stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return this.renderFormCity();
-      case 1:
-        return this.renderResponsForm();
-      case 2:
-        return this.renderConfirm();
-      default:
-        return "WTF";
-    }
-  }
-
-  renderFormCity() {
+  renderFormState() {
+    // eslint-disable-next-line react/prop-types
     const { classes } = this.props;
     return (
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="primary">
-              <h4
-                className={classes.cardTitleWhite}
-              >{`Nova Caravana: Localização`}</h4>
+              <h4 className={classes.cardTitleWhite}>{`Novo Estado`}</h4>
               <p className={classes.cardCategoryWhite}>
-                {`Preencha os campos abaixo para registrar a cidade da caravana`}
+                {`Você está liberando um novo estado. Caso queira adicionar uma caravana a um estado já existente, clique no botão + que está na frente do nome do estado na lista inicial. `}
               </p>
             </CardHeader>
             <CardBody>
-              <GridItem xs={12} sm={12} md={6}>
+              <GridItem xs={12} sm={12} md={12} style={{ marginTop: "23px" }}>
                 <TextField
-                  label="Cidade"
-                  id="city"
-                  value={this.state.city}
-                  onChange={this.handleChange("city")}
+                  label="Nome do estado"
+                  id="state"
+                  value={this.state.state}
+                  onChange={this.handleChange("state")}
                   fullWidth
                 />
-              </GridItem>
-              <GridItem xs={12} sm={12} md={6} style={{ marginTop: "23px" }}>
-                <TextField
+
+                <Button
+                  size="small"
+                  color="secondary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={() => {
+                    this.handleClearFields();
+                  }}
+                >
+                  Voltar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={() => {
+                    this.setState({ action: 2 });
+                  }}
+                >
+                  Adicionar cidade
+                </Button>
+
+                {/* <TextField
                   id="state"
                   select
                   label="Estado"
@@ -293,10 +343,103 @@ class Caravans extends React.Component {
                       {option.Nome}
                     </option>
                   ))}
-                </TextField>
+                </TextField> */}
               </GridItem>
             </CardBody>
-            <CardFooter>{this.renderButtons()}</CardFooter>
+            <CardFooter>
+              <GridItem xs={12} sm={12} md={12}>
+                <p>Estados já cadastrados:</p>
+                <ul>
+                  {this.state.listStates.map(state => (
+                    // eslint-disable-next-line react/jsx-key
+                    <li>{`${state.name}`}</li>
+                  ))}
+                </ul>
+              </GridItem>
+            </CardFooter>
+          </Card>
+        </GridItem>
+      </GridContainer>
+    );
+  }
+
+  renderFormCity() {
+    // eslint-disable-next-line react/prop-types
+    const { classes } = this.props;
+    const { indexState, listStates } = this.state;
+
+    return (
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={12}>
+          <Card>
+            <CardHeader color="primary">
+              <h4 className={classes.cardTitleWhite}>{`Cadastrar cidade`}</h4>
+              <p className={classes.cardCategoryWhite}>
+                {`Você está inserindo uma cidade ao estado ${
+                  indexState != null ? listStates[indexState].name : "criado"
+                }`}
+              </p>
+            </CardHeader>
+            <CardBody>
+              <GridItem xs={12} sm={12} md={12} style={{ marginTop: "23px" }}>
+                <TextField
+                  label="Nome da cidade"
+                  id="city"
+                  value={this.state.city}
+                  onChange={this.handleChange("city")}
+                  fullWidth
+                />
+
+                <Button
+                  size="small"
+                  color="secondary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={() => {
+                    this.state.state == ""
+                      ? this.setState({ action: 0 })
+                      : this.setState({ action: 1 });
+                  }}
+                >
+                  Voltar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={() => {
+                    this.setState({ action: 3 });
+                  }}
+                >
+                  Adicionar promoter(s)
+                </Button>
+
+                {/* <TextField
+                  id="state"
+                  select
+                  label="Estado"
+                  // className={classes.textField}
+                  value={this.state.state}
+                  onChange={this.handleChange("state")}
+                  SelectProps={{
+                    native: true,
+                    MenuProps: {
+                      className: classes.menu
+                    }
+                  }}
+                  fullWidth
+                  helperText="Selecione o estado"
+                  margin="normal"
+                >
+                  {this.state.states.map((option, index) => (
+                    <option key={index} value={option.Nome}>
+                      {option.Nome}
+                    </option>
+                  ))}
+                </TextField> */}
+              </GridItem>
+            </CardBody>
           </Card>
         </GridItem>
       </GridContainer>
@@ -339,8 +482,33 @@ class Caravans extends React.Component {
               >
                 <AddIcon />
               </Button>
+              <GridItem xs={12} sm={12} md={12}>
+                <Button
+                  size="small"
+                  color="secondary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={() => {
+                    this.setState({ action: 2 });
+                  }}
+                >
+                  Voltar
+                </Button>
+                <Button
+                  size="small"
+                  color="primary"
+                  aria-label="Add"
+                  className={classes.button}
+                  onClick={() => {
+                    this.state.indexState == null
+                      ? this._save()
+                      : this._update();
+                  }}
+                >
+                  Salvar
+                </Button>
+              </GridItem>
             </CardBody>
-            <CardFooter>{this.renderButtons()}</CardFooter>
           </Card>
         </GridItem>
       </GridContainer>
@@ -444,39 +612,10 @@ class Caravans extends React.Component {
               </p>
             </CardHeader>
             <CardBody />
-            <CardFooter>{this.renderButtons()}</CardFooter>
+            <CardFooter />
           </Card>
         </GridItem>
       </GridContainer>
-    );
-  }
-
-  renderButtons() {
-    const { classes } = this.props;
-    const steps = this.getSteps();
-    const { activeStep } = this.state;
-    return (
-      <div>
-        <Button
-          disabled={activeStep === 0}
-          onClick={this.handleBack}
-          className={classes.backButton}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={
-            activeStep === steps.length - 1 ? this._save : this.handleNext
-          }
-        >
-          {activeStep === steps.length - 1 ? "Finalizar" : "Próximo"}
-        </Button>
-        <Button color="transparent" onClick={this.handleModalClose}>
-          Cancelar
-        </Button>
-      </div>
     );
   }
 
@@ -507,9 +646,24 @@ class Caravans extends React.Component {
                 <h4
                   style={{
                     backgroundColor: "rgba(49,20,149,.8)",
-                    color: "white"
+                    color: "white",
+                    padding: "10px",
+                    borderRadius: "5px"
                   }}
-                >{`Caravanas de ${state.name}`}</h4>
+                >
+                  {`${state.name}`}
+                  <AddIcon
+                    style={{
+                      float: "right",
+                      borderRadius: "100%",
+                      border: "1px solid #FFF",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => {
+                      this.setState({ indexState, action: 2 });
+                    }}
+                  />
+                </h4>
               </ListSubheader>
               {state.cities.map((city, index) => (
                 <ListItem
@@ -519,7 +673,8 @@ class Caravans extends React.Component {
                   }}
                 >
                   <ListItemText primary={`${city.city}`} />
-                  <Icon>edit_icon</Icon>
+                  {/* Clique para editar <Icon>edit_icon</Icon> */}
+                  Clique para editar
                 </ListItem>
               ))}
             </ul>
@@ -531,48 +686,13 @@ class Caravans extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const steps = this.getSteps();
-    const { activeStep } = this.state;
-    // eslint-disable-next-line no-console
-    console.log(this.state);
-    if (this.state.modalOpen) {
-      return (
-        <div className={classes.paper}>
-          {this.renderSnackbar()}
-          <div className={classes.root}>
-            <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map(label => {
-                return (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                );
-              })}
-            </Stepper>
-            <div>
-              {this.state.activeStep === steps.length ? (
-                <div>
-                  <Typography className={classes.instructions}>
-                    All steps completed
-                  </Typography>
-                  <Button onClick={this.handleReset}>Reset</Button>
-                </div>
-              ) : (
-                <div>
-                  <Typography className={classes.instructions}>
-                    {this.getStepContent(activeStep)}
-                  </Typography>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div>
+
+    switch (this.state.action) {
+      case 0:
+        return (
           <GridItem xs={12} sm={12} md={12}>
             <Card>
+              {this.renderSnackbar()}
               <CardHeader color="primary">
                 <h4 className={classes.cardTitleWhite}>
                   Caravanas Cadastradas
@@ -582,13 +702,13 @@ class Caravans extends React.Component {
                   uma nova caravana e editar as caravanas já existentes.
                 </p>
                 <Button
-                  onClick={this.handleModalOpen}
+                  onClick={() => this.setState({ action: 1 })}
                   style={{ alignItems: "center", justifyContent: "center" }}
                   round
                   color="success"
                   className={classes.fabButton}
                 >
-                  <AddIcon /> Nova Caravana
+                  <AddIcon /> Novo Estado
                 </Button>
               </CardHeader>
               <CardBody>
@@ -601,8 +721,13 @@ class Caravans extends React.Component {
               </CardBody>
             </Card>
           </GridItem>
-        </div>
-      );
+        );
+      case 1:
+        return this.renderFormState();
+      case 2:
+        return this.renderFormCity();
+      case 3:
+        return this.renderResponsForm();
     }
   }
 }
