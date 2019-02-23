@@ -38,7 +38,7 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import Service from "../../services/accommodations";
+import Service from "../../services/drinks";
 
 import constants from "../../services/constants";
 
@@ -108,23 +108,16 @@ class TablePaginationActions extends React.Component {
   }
 }
 
-TablePaginationActions.propTypes = {
-  classes: PropTypes.object.isRequired,
-  count: PropTypes.number.isRequired,
-  onChangePage: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-  theme: PropTypes.object.isRequired,
-};
+
 
 const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: true })(
   TablePaginationActions,
 );
 
 let counter = 0;
-function createData(name, status, _id) {
+function createData(name, _id) {
   counter += 1;
-  return { id: counter, name, status, _id };
+  return { id: counter, name, _id };
 }
 
 const styles = theme => ({
@@ -176,23 +169,18 @@ const styles = theme => ({
   }
 });
 
-class Accommodations extends React.Component {
+class Drinks extends React.Component {
   state = {
     rows: [],
     page: 0,
     rowsPerPage: 5,
-    accommodations: [],
+    drinks: [],
     id: undefined,
     _id: undefined,
     name: "",
-    img: "",
-    type: "",
-    vacancies: 0,
-    location: "",
-    structure: "",
-    extras: "",
-    contact: "",
-    price: 0.0,
+    quantity: "",
+    icon: "",
+    
     action: 0, //0- listagem, 1- insert estado, 2- insert cidade, 3- insert promoter
     indexState: null,
     notification: "",
@@ -212,27 +200,21 @@ class Accommodations extends React.Component {
     console.log(response.data);
     if (response.data.code === 200) {
       let ac = [];
-      response.data.accommodations.map(accommodation => {
-        ac.push(createData(accommodation.name, accommodation.active, accommodation._id));
+      response.data.drinks.map(drink => {
+        ac.push(createData(drink.name, drink._id));
       })
-      this.setState({ rows: ac, accommodations: response.data.accommodations });
+      this.setState({ rows: ac, drinks: response.data.drinks });
     } else {
       alert("Um erro ocorreu");
     }
   };
   _save = async () => {
-    const { accommodations, name, img, type, vacancies, location, structure, extras, contact, price, rows } = this.state;
+    const { drinks, name, quantity, icon, rows } = this.state;
 
     const data = {
       name: name,
-      img: img,
-      type: type,
-      vacancies: vacancies,
-      location: location,
-      structure: structure,
-      extras: extras,
-      contact: contact,
-      price: price
+      quantity: quantity,
+      icon: icon
     };
 
     const response = await Service.post(data);
@@ -248,29 +230,23 @@ class Accommodations extends React.Component {
     } else {
       msg = "Cadastrado com sucesso!";
       types = "success";
-      accommodations.push(response.data.accommodation);
-      rows.push(createData(response.data.accommodation.name, response.data.accommodation.active, response.data.accommodation._id))
-      this.setState({ accommodations, rows });
+      drinks.push(response.data.drink);
+      rows.push(createData(response.data.drink.name, response.data.drink._id))
+      this.setState({ drinks, rows });
     }
     this.setState({ action: 1 });
     this.showNotification("tc", msg, types);
     this.handleClearFields();
   };
   _update = async () => {
-    const { accommodations, rows, id, _id, name, img, type, vacancies, location, structure, extras, contact, price } = this.state;
+    const { drinks, rows, id, _id, name, quantity, icon } = this.state;
 
     const data = {
-      ...accommodations[id],
+      ...drinks[id],
       _id: _id,
       name: name,
-      img: img,
-      type: type,
-      vacancies: vacancies,
-      location: location,
-      structure: structure,
-      extras: extras,
-      contact: contact,
-      price: price
+      quantity: quantity,
+      icon: icon
     };
 
     const response = await Service.update(data);
@@ -284,19 +260,19 @@ class Accommodations extends React.Component {
     } else {
       msg = "Alterado com sucesso!";
       types = "success";
-      let acc = accommodations;
+      let acc = drinks;
       let r = rows;
       let count = id - 1;
-      acc[count] = response.data.accommodation;
-      r[count] = { id: id, name: acc[count].name, status: acc[count].status, _id: acc[count]._id }
-      this.setState({ accommodations: acc, rows: r });
+      acc[count] = response.data.drink;
+      r[count] = { id: id, name: acc[count].name, _id: acc[count]._id }
+      this.setState({ drinks: acc, rows: r });
     }
 
     this.setState({ action: 0 });
     this.showNotification("tc", msg, types);
   };
   _delete = async () => {
-    const { accommodations, rows, id, _id } = this.state;
+    const { drinks, rows, id, _id } = this.state;
     const data = {
       _id: _id
     };
@@ -312,19 +288,19 @@ class Accommodations extends React.Component {
     } else {
       msg = "Deletado com sucesso!";
       types = "success";
-      let acc = accommodations;
+      let acc = drinks;
       let r = rows;
       let count = id - 1;
       acc.splice(count, 1);
       rows.splice(count, 1)
-      this.setState({ accommodations: acc, rows: r });
+      this.setState({ drinks: acc, rows: r });
     }
 
     this.setState({ action: 0 });
     this.showNotification("tc", msg, types);
   };
   showNotification(place, notification, color) {
-    console.log("MOSTRANDO NOTIFICAÇÂO");
+    console.log("MOSTRANDO NOTIFICAÇÃO");
     var x = [];
     x[place] = true;
     this.setState(x);
@@ -342,15 +318,9 @@ class Accommodations extends React.Component {
   };
   handleClearFields = () => {
     const name = "",
-      img = "",
-      type = "",
-      vacancies = 0,
-      location = "",
-      structure = "",
-      extras = "",
-      contact = "",
-      price = 0.0;
-    this.setState({ name, img, type, vacancies, location, structure, extras, contact, price });
+      quantity = "",
+      icon = ""
+    this.setState({ name, quantity, icon });
   };
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
@@ -382,59 +352,30 @@ class Accommodations extends React.Component {
         <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>{(this.state.action == 1) ? `Novo Alojamento` : `Editar Alojamento`}</h4>
+              <h4 className={classes.cardTitleWhite}>{(this.state.action == 1) ? `Nova Bebida` : `Editar Bebida`}</h4>
             </CardHeader>
             <CardBody>
               <GridItem xs={12} sm={12} md={12} style={{ marginTop: "23px" }}>
                 <TextField
-                  label="Nome do Alojamento"
+                  label="Nome da Bebida"
                   id="name"
                   value={this.state.name}
                   onChange={this.handleChange("name")}
                   fullWidth
                 />
                 <TextField
-                  label="Quantidade de Vagas"
-                  id="vacancies"
-                  value={this.state.vacancies}
+                  label="Quantidade de Bebida"
+                  id="quantity"
+                  value={this.state.quantity}
                   type="number"
-                  onChange={this.handleChange("vacancies")}
+                  onChange={this.handleChange("quantity")}
                   fullWidth
                 />
                 <TextField
-                  label="Localização"
-                  id="location"
-                  value={this.state.location}
-                  onChange={this.handleChange("location")}
-                  fullWidth
-                />
-                <TextField
-                  label="Estrutura"
-                  id="structure"
-                  value={this.state.structure}
-                  onChange={this.handleChange("structure")}
-                  fullWidth
-                />
-                <TextField
-                  label="Extras"
-                  id="extras"
-                  value={this.state.extras}
-                  onChange={this.handleChange("extras")}
-                  fullWidth
-                />
-                <TextField
-                  label="Contato"
-                  id="contact"
-                  value={this.state.contact}
-                  onChange={this.handleChange("contact")}
-                  fullWidth
-                />
-                <TextField
-                  label="Preço"
-                  id="price"
-                  value={this.state.price}
-                  type="number"
-                  onChange={this.handleChange("price")}
+                  label="Icone"
+                  id="icon"
+                  value={this.state.icon}
+                  onChange={this.handleChange("icon")}
                   fullWidth
                 />
                 <Button
@@ -488,9 +429,9 @@ class Accommodations extends React.Component {
             </CardBody>
             <CardFooter>
               <GridItem xs={12} sm={12} md={12}>
-                <p>Alojamentos já cadastrados:</p>
+                <p>Bebidas já cadastradas:</p>
                 <ul>
-                  {this.state.accommodations.map(name => (
+                  {this.state.drinks.map(name => (
                     // eslint-disable-next-line react/jsx-key
                     <li>{`${name.name}`}</li>
                   ))}
@@ -517,23 +458,18 @@ class Accommodations extends React.Component {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <TableCell align="right">Ativo</TableCell>
+                  
                   <TableCell align="right">
                     <IconButton aria-label="Edit" onClick={() => {
-                      let ac = this.state.accommodations[row.id - 1];
+                      let ac = this.state.drinks[row.id - 1];
                       console.log(row.id);
                       this.setState({
                         action: 2,
                         id: row.id,
                         _id: row._id,
                         name: ac.name,
-                        type: ac.type,
-                        vacancies: ac.vacancies,
-                        location: ac.location,
-                        structure: ac.structure,
-                        extras: ac.extras,
-                        contact: ac.contact,
-                        price: ac.price,
+                        quantity: ac.quantity,
+                        icon: ac.icon,
                       });
                       // this.handleClearFields();
                     }}>
@@ -590,11 +526,11 @@ class Accommodations extends React.Component {
             {this.renderSnackbar()}
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>
-                Alojamentos Cadastrados
+                Bebidas Cadastradas
                 </h4>
               <p>
-                Área de gerenciamento das alojamentos do site. Você pode inserir
-                uma novo alojamento e editar as os alojamentos já existentes.
+                Área de gerenciamento das bebidas do site. Você pode inserir
+                uma nova bebida e editar as bebidas já existentes.
                 </p>
               <Button
                 onClick={() => {
@@ -606,7 +542,7 @@ class Accommodations extends React.Component {
                 color="success"
                 className={classes.fabButton}
               >
-                <AddIcon /> Novo Alojamento
+                <AddIcon /> Nova Bebida
                 </Button>
             </CardHeader>
             <CardBody>
@@ -622,8 +558,8 @@ class Accommodations extends React.Component {
   }
 }
 
-Accommodations.propTypes = {
+Drinks.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Accommodations);
+export default withStyles(styles)(Drinks);
