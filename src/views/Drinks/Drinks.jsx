@@ -39,6 +39,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import Service from "../../services/drinks";
+import UploadService from "../../services/upload_image";
 
 import constants from "../../services/constants";
 
@@ -180,7 +181,7 @@ class Drinks extends React.Component {
     name: "",
     quantity: "",
     icon: "",
-    
+
     action: 0, //0- listagem, 1- insert estado, 2- insert cidade, 3- insert promoter
     indexState: null,
     notification: "",
@@ -191,6 +192,15 @@ class Drinks extends React.Component {
   handleChange = name => event => {
     this.setState({
       [name]: event.target.value
+    });
+  };
+
+  handleChangeImg = e => {
+    console.log(e.target.files[0]);
+
+    this.setState({
+      file: e.target.files[0],
+      img: URL.createObjectURL(e.target.files[0])
     });
   };
 
@@ -209,12 +219,16 @@ class Drinks extends React.Component {
     }
   };
   _save = async () => {
-    const { drinks, name, quantity, icon, rows } = this.state;
+    const { drinks, name, quantity, file, rows } = this.state;
+
+    console.log(file);
+
+    const uploadResponse = await UploadService.post(file);
 
     const data = {
       name: name,
       quantity: quantity,
-      icon: icon
+      icon: uploadResponse.data.img
     };
 
     const response = await Service.post(data);
@@ -239,14 +253,14 @@ class Drinks extends React.Component {
     this.handleClearFields();
   };
   _update = async () => {
-    const { drinks, rows, id, _id, name, quantity, icon } = this.state;
+    const { drinks, rows, id, _id, name, quantity, path } = this.state;
 
     const data = {
       ...drinks[id],
       _id: _id,
       name: name,
       quantity: quantity,
-      icon: icon
+      icon: path
     };
 
     const response = await Service.update(data);
@@ -371,13 +385,13 @@ class Drinks extends React.Component {
                   onChange={this.handleChange("quantity")}
                   fullWidth
                 />
-                <TextField
-                  label="Icone"
-                  id="icon"
-                  value={this.state.icon}
-                  onChange={this.handleChange("icon")}
-                  fullWidth
-                />
+
+                <input type="file" onChange={this.handleChangeImg} />
+
+                <GridItem xs={12} sm={12} md={12} style={{ marginTop: "23px" }}>
+                  <img src={this.state.icon} />
+                </GridItem>
+
                 <Button
                   size="small"
                   color="secondary"
@@ -458,7 +472,7 @@ class Drinks extends React.Component {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  
+
                   <TableCell align="right">
                     <IconButton aria-label="Edit" onClick={() => {
                       let ac = this.state.drinks[row.id - 1];
@@ -469,7 +483,8 @@ class Drinks extends React.Component {
                         _id: row._id,
                         name: ac.name,
                         quantity: ac.quantity,
-                        icon: ac.icon,
+                        icon: `http://localhost:5000/${ac.icon}`,
+                        path: ac.icon
                       });
                       // this.handleClearFields();
                     }}>
@@ -547,7 +562,7 @@ class Drinks extends React.Component {
             </CardHeader>
             <CardBody>
               {this.renderList()}
-                </CardBody>
+            </CardBody>
           </Card>
         </GridItem>);
       case 1:

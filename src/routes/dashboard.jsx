@@ -71,7 +71,7 @@ const dashboardRoutes = [
     path: "/stages",
     sidebarName: "Palcos",
     navbarName: "Palcos",
-    icon: Home,
+    icon: "speaker",
     component: Stages
   },
   {
