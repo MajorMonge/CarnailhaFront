@@ -16,6 +16,7 @@ import UserProfile from "views/UserProfile/UserProfile.jsx";
 import Caravans from "views/Caravans/Caravans.jsx";
 import Accommodations from "views/Accommodations/Accommodations.jsx";
 import Stages from "views/Stages/Stages.jsx";
+import Testimonial from "views/Testimonial/Testimonial.jsx";
 import TableList from "views/TableList/TableList.jsx";
 import Typography from "views/Typography/Typography.jsx";
 import Icons from "views/Icons/Icons.jsx";
@@ -73,6 +74,13 @@ const dashboardRoutes = [
     navbarName: "Palcos",
     icon: "speaker",
     component: Stages
+  },
+  {
+    path: "/testimonial",
+    sidebarName: "Depoimentos",
+    navbarName: "Depoimentos",
+    icon: "textsms",
+    component: Testimonial
   },
   {
     path: "/typography",

@@ -38,8 +38,9 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import Service from "../../services/drinks";
+import Service from "../../services/testimonials";
 import UploadService from "../../services/upload_image";
+import Switch from '@material-ui/core/Switch';
 
 import constants from "../../services/constants";
 
@@ -170,17 +171,18 @@ const styles = theme => ({
   }
 });
 
-class Drinks extends React.Component {
+class Testimonials extends React.Component {
   state = {
     rows: [],
     page: 0,
     rowsPerPage: 5,
-    drinks: [],
+    testimonials: [],
     id: undefined,
     _id: undefined,
     name: "",
-    quantity: "",
-    icon: "",
+    testimonial: "",
+    img: "",
+    active: true,
 
     action: 0, //0- listagem, 1- insert estado, 2- insert cidade, 3- insert promoter
     indexState: null,
@@ -194,6 +196,11 @@ class Drinks extends React.Component {
       [name]: event.target.value
     });
   };
+
+  handleChangeSwitch = name => event => {
+    this.setState({ [name]: event.target.checked });
+    console.log("alternou" + name)
+  }; 
 
   handleChangeImg = e => {
     console.log(e.target.files[0]);
@@ -210,16 +217,16 @@ class Drinks extends React.Component {
     console.log(response.data);
     if (response.data.code === 200) {
       let ac = [];
-      response.data.drinks.map(drink => {
-        ac.push(createData(drink.name, drink._id));
+      response.data.testimonials.map(testimonial => {
+        ac.push(createData(testimonial.name, testimonial._id));
       })
-      this.setState({ rows: ac, drinks: response.data.drinks });
+      this.setState({ rows: ac, testimonials: response.data.testimonials });
     } else {
       alert("Um erro ocorreu");
     }
   };
   _save = async () => {
-    const { drinks, name, quantity, file, rows } = this.state;
+    const { testimonials, name, testimonial, file, rows } = this.state;
 
     console.log(file);
 
@@ -227,8 +234,8 @@ class Drinks extends React.Component {
 
     const data = {
       name: name,
-      quantity: quantity,
-      icon: uploadResponse.data.img
+      testimonial: testimonial,
+      img: uploadResponse.data.img
     };
 
     const response = await Service.post(data);
@@ -244,23 +251,23 @@ class Drinks extends React.Component {
     } else {
       msg = "Cadastrado com sucesso!";
       types = "success";
-      drinks.push(response.data.drink);
-      rows.push(createData(response.data.drink.name, response.data.drink._id))
-      this.setState({ drinks, rows });
+      testimonials.push(response.data.testimonial);
+      rows.push(createData(response.data.testimonial.name, response.data.testimonial._id))
+      this.setState({ testimonials, rows });
     }
     this.setState({ action: 1 });
     this.showNotification("tc", msg, types);
     this.handleClearFields();
   };
   _update = async () => {
-    const { drinks, rows, id, _id, name, quantity, path } = this.state;
+    const { testimonials, rows, id, _id, name, testimonial, path } = this.state;
 
     const data = {
-      ...drinks[id],
+      ...testimonials[id],
       _id: _id,
       name: name,
-      quantity: quantity,
-      icon: path
+      testimonial: testimonial,
+      img: path
     };
 
     const response = await Service.update(data);
@@ -274,19 +281,19 @@ class Drinks extends React.Component {
     } else {
       msg = "Alterado com sucesso!";
       types = "success";
-      let acc = drinks;
+      let acc = testimonials;
       let r = rows;
       let count = id - 1;
-      acc[count] = response.data.drink;
+      acc[count] = response.data.testimonial;
       r[count] = { id: id, name: acc[count].name, _id: acc[count]._id }
-      this.setState({ drinks: acc, rows: r });
+      this.setState({ testimonials: acc, rows: r });
     }
 
     this.setState({ action: 0 });
     this.showNotification("tc", msg, types);
   };
   _delete = async () => {
-    const { drinks, rows, id, _id } = this.state;
+    const { testimonials, rows, id, _id } = this.state;
     const data = {
       _id: _id
     };
@@ -302,12 +309,12 @@ class Drinks extends React.Component {
     } else {
       msg = "Deletado com sucesso!";
       types = "success";
-      let acc = drinks;
+      let acc = testimonials;
       let r = rows;
       let count = id - 1;
       acc.splice(count, 1);
       rows.splice(count, 1)
-      this.setState({ drinks: acc, rows: r });
+      this.setState({ testimonials: acc, rows: r });
     }
 
     this.setState({ action: 0 });
@@ -332,13 +339,14 @@ class Drinks extends React.Component {
   };
   handleClearFields = () => {
     const name = "",
-      quantity = "",
-      icon = ""
-    this.setState({ name, quantity, icon });
+      testimonial = "",
+      img = ""
+    this.setState({ name, testimonial, img });
   };
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
-  };
+  }; 
+  
   componentDidMount() {
     this._load();
   }
@@ -357,7 +365,7 @@ class Drinks extends React.Component {
       </GridItem>
     );
   }
-  renderFormDrinks() {
+  renderFormTestimonial() {
     // eslint-disable-next-line react/prop-types
     const { classes } = this.props;
     return (
@@ -366,30 +374,29 @@ class Drinks extends React.Component {
         <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>{(this.state.action == 1) ? `Nova Bebida` : `Editar Bebida`}</h4>
+              <h4 className={classes.cardTitleWhite}>{(this.state.action == 1) ? `Novo Depoimento` : `Editar Depoimento`}</h4>
             </CardHeader>
             <CardBody>
               <GridItem xs={12} sm={12} md={12} style={{ marginTop: "23px" }}>
                 <TextField
-                  label="Nome da Bebida"
+                  label="Nome"
                   id="name"
                   value={this.state.name}
                   onChange={this.handleChange("name")}
                   fullWidth
                 />
                 <TextField
-                  label="Quantidade de Bebida"
-                  id="quantity"
-                  value={this.state.quantity}
-                  type="number"
-                  onChange={this.handleChange("quantity")}
+                  label="Depoimento"
+                  id="testimonial"
+                  value={this.state.testimonial}
+                  onChange={this.handleChange("testimonial")}
                   fullWidth
                 />
 
                 <input type="file" onChange={this.handleChangeImg} />
 
                 <GridItem xs={12} sm={12} md={12} style={{ marginTop: "23px" }}>
-                  <img src={this.state.icon} />
+                  <img src={this.state.img} />
                 </GridItem>
 
                 <Button
@@ -443,9 +450,9 @@ class Drinks extends React.Component {
             </CardBody>
             <CardFooter>
               <GridItem xs={12} sm={12} md={12}>
-                <p>Bebidas já cadastradas:</p>
+                <p>Depoimentos já cadastrados:</p>
                 <ul>
-                  {this.state.drinks.map(name => (
+                  {this.state.testimonials.map(name => (
                     // eslint-disable-next-line react/jsx-key
                     <li>{`${name.name}`}</li>
                   ))}
@@ -457,6 +464,9 @@ class Drinks extends React.Component {
       </GridContainer>
     );
   }
+
+
+
   renderList() {
     const { classes } = this.props;
     const { rows, rowsPerPage, page } = this.state;
@@ -472,19 +482,24 @@ class Drinks extends React.Component {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-
+                  <Switch
+                    checked={row.id.active}
+                    onChange={this.handleChangeSwitch(row.id)}
+                    value={row.id}
+                    color="primary"
+                  />
                   <TableCell align="right">
                     <IconButton aria-label="Edit" onClick={() => {
-                      let ac = this.state.drinks[row.id - 1];
+                      let ac = this.state.testimonials[row.id - 1];
                       console.log(row.id);
                       this.setState({
                         action: 2,
                         id: row.id,
                         _id: row._id,
                         name: ac.name,
-                        quantity: ac.quantity,
-                        icon: `http://localhost:5000/${ac.icon}`,
-                        path: ac.icon
+                        testimonial: ac.testimonial,
+                        img: `http://localhost:5000/${ac.img}`,
+                        path: ac.img
                       });
                       // this.handleClearFields();
                     }}>
@@ -541,11 +556,11 @@ class Drinks extends React.Component {
             {this.renderSnackbar()}
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>
-                Bebidas Cadastradas
+                Depoimentos Cadastradas
                 </h4>
               <p>
-                Área de gerenciamento das bebidas do site. Você pode inserir
-                uma nova bebida e editar as bebidas já existentes.
+                Área de gerenciamento dos depoimentos do site. Você pode inserir
+                um novo depoimento e editar os depoimentos já existentes.
                 </p>
               <Button
                 onClick={() => {
@@ -557,7 +572,7 @@ class Drinks extends React.Component {
                 color="success"
                 className={classes.fabButton}
               >
-                <AddIcon /> Nova Bebida
+                <AddIcon /> Novo Depoimento
                 </Button>
             </CardHeader>
             <CardBody>
@@ -566,15 +581,15 @@ class Drinks extends React.Component {
           </Card>
         </GridItem>);
       case 1:
-        return this.renderFormDrinks();
+        return this.renderFormTestimonial();
       case 2:
-        return this.renderFormDrinks();
+        return this.renderFormTestimonial();
     }
   }
 }
 
-Drinks.propTypes = {
+Testimonials.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Drinks);
+export default withStyles(styles)(Testimonials);
