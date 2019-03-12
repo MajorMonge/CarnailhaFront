@@ -43,6 +43,7 @@ import UploadService from "../../services/upload_image";
 import Switch from '@material-ui/core/Switch';
 
 import constants from "../../services/constants";
+import Checkbox from '@material-ui/core/Checkbox';
 
 const actionsStyles = theme => ({
   root: {
@@ -200,7 +201,7 @@ class Testimonials extends React.Component {
   handleChangeSwitch = name => event => {
     this.setState({ [name]: event.target.checked });
     console.log("alternou" + name)
-  }; 
+  };
 
   handleChangeImg = e => {
     console.log(e.target.files[0]);
@@ -345,8 +346,8 @@ class Testimonials extends React.Component {
   };
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
-  }; 
-  
+  };
+
   componentDidMount() {
     this._load();
   }
@@ -482,12 +483,14 @@ class Testimonials extends React.Component {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <Switch
-                    checked={row.id.active}
-                    onChange={this.handleChangeSwitch(row.id)}
-                    value={row.id}
-                    color="primary"
-                  />
+                  <TableCell align="right">
+                    <Switch
+                      checked={row.id.active}
+                      onChange={(_, checked) => this.handleChangeSwitch(checked, row.id)}
+                      value={row.id}
+                      color="primary"
+                    />
+                  </TableCell>
                   <TableCell align="right">
                     <IconButton aria-label="Edit" onClick={() => {
                       let ac = this.state.testimonials[row.id - 1];
