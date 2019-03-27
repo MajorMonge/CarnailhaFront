@@ -199,8 +199,10 @@ class Testimonials extends React.Component {
   };
 
   handleChangeSwitch = name => event => {
-    this.setState({ [name]: event.target.checked });
-    console.log("alternou" + name)
+    this.setState({ [name]: event.target.checked }, () => {
+      console.log("alternou para "+ this.state.active)
+    });
+
   };
 
   handleChangeImg = e => {
@@ -483,14 +485,14 @@ class Testimonials extends React.Component {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <TableCell align="right">
-                    <Switch
-                      checked={row.id.active}
-                      onChange={(_, checked) => this.handleChangeSwitch(checked, row.id)}
-                      value={row.id}
+                  {<TableCell align="right">
+                    {<Switch
+                      checked={row.active}
+                      onChange={this.handleChangeSwitch("active")}
+                      value={this.state.active}
                       color="primary"
-                    />
-                  </TableCell>
+                    />}
+                  </TableCell>}
                   <TableCell align="right">
                     <IconButton aria-label="Edit" onClick={() => {
                       let ac = this.state.testimonials[row.id - 1];
